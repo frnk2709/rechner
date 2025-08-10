@@ -1,6 +1,6 @@
 import streamlit as st
 import datetime
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 
 
 st.title('AfA Rechner für Wirtschaftsgüter')
@@ -10,7 +10,7 @@ def berechne_jahre_afa(anschaffungskosten, nutzungsdauer):
     if nutzungsdauer > 0:
         anschaffungskosten_decimal = Decimal(str(anschaffungskosten))
         jahres_afa = anschaffungskosten_decimal / nutzungsdauer
-        return jahres_afa
+        return Decimal(jahres_afa).quantize(Decimal('.01'),rounding=ROUND_HALF_UP)
     else:
         st.error('Nutzungsdauer muss mindestens 1 Jahr betragen')
 
@@ -20,7 +20,7 @@ def bestimme_monat_anschaffung(datum_anschaffung):
 
 def berechne_zeitanteilige_afa(jahres_afa, monat_anschaffung):
     zeitanteilige_afa = (jahres_afa / 12) * (12 - monat_anschaffung + 1)
-    return zeitanteilige_afa
+    return Decimal(zeitanteilige_afa).quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
 
 
 #Eingaben
@@ -45,4 +45,5 @@ zeitanteilige_afa = berechne_zeitanteilige_afa(jahres_afa, monat_anschaffung)
 
 st.success(f'jährliche AfA: {jahres_afa} €')
 
-st.success(f'zeitanteilige AfA: {zeitanteilige_afa} €')
+st.success(f'zeitanteilige AfA in {datum_anschaffung.year}: {zeitanteilige_afa} €')
+
